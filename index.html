@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="AFTERIMAGE — atelier VHS et NTSC, émulation réelle dans le navigateur, sans téléversement.">
+<link rel="icon" href="data:,">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+<title>AFTERIMAGE — Studio VHS en ligne</title>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">VHS</span><strong>AFTERIMAGE</strong><span class="web-tag">WEB</span></div>
+  <div class="top-actions">
+    <span class="engine-tag" id="engineTag"><i></i> CHARGEMENT VHS…</span>
+    <button class="subtle" id="importBtn" type="button">+ Importer</button>
+    <button class="subtle" id="folderBtn" type="button" title="Autoriser une fois le dossier des photos CP77">Dossier CP77</button>
+    <button class="export-button" id="exportBtn" type="button" disabled>Exporter PNG <span aria-hidden="true">↗</span></button>
+  </div>
+</header>
+<main class="workspace">
+  <div class="stage-top">
+    <div class="meta"><span id="fileName">AUCUNE IMAGE</span><span id="fileSize"></span></div>
+    <div class="pager"><span id="engineStatus" class="engine-status">Initialisation…</span><button id="prevBtn" aria-label="Image précédente" disabled>←</button><span id="pageCounter">00 / 00</span><button id="nextBtn" aria-label="Image suivante" disabled>→</button></div>
+  </div>
+  <div class="stage" id="stage">
+    <div class="empty" id="empty">
+      <div class="empty-symbol">VHS <span>//</span></div>
+      <h1>TES IMAGES. <em>UNE AUTRE ÉPOQUE.</em></h1>
+      <p>Dépose une capture Cyberpunk 2077. L'émulation NTSC/VHS tourne directement dans ton navigateur.</p>
+      <button id="emptyOpen" type="button">Ouvrir une image <span>↗</span></button>
+      <small>AUCUN ENVOI · AUCUN COMPTE · ORIGINAL PRÉSERVÉ</small>
+    </div>
+    <div class="artwork" id="artwork" hidden>
+      <canvas id="afterCanvas" aria-label="Photo avec simulation VHS"></canvas>
+      <canvas id="beforeCanvas" aria-label="Photo originale"></canvas>
+      <div class="osd" id="osd"><span>STILL · NTSC</span><span>00:00:00</span></div>
+      <div class="splitline" id="splitline" hidden><span>‹ ›</span></div>
+    </div>
+    <div id="galleryPanel" class="gallery-panel" hidden aria-label="Galerie des photos">
+      <div class="gallery-top"><span id="galleryHeading">MES CAPTURES</span><div><button type="button" id="refreshBtn">↻ Actualiser</button><button type="button" id="closeGallery" aria-label="Fermer la galerie">✕</button></div></div>
+      <div class="gallery-strip" id="galleryStrip"></div>
+    </div>
+    <div class="drop" id="dropOverlay" hidden>↓ DÉPOSE TA CAPTURE ICI</div>
+  </div>
+  <div class="view-bar">
+    <div class="views" role="group" aria-label="Vue de l'image"><button type="button" class="active" data-view="vhs">VHS</button><button type="button" data-view="split">AVANT / APRÈS</button><button type="button" data-view="original">ORIGINAL</button></div>
+    <span class="view-status" id="viewStatus">Moteur en préparation</span>
+  </div>
+  <div class="toolbelt">
+    <div class="intensity-control"><div class="control-heading"><label for="strength">INTENSITÉ VHS</label><output id="v-strength">55</output></div>
+      <input type="range" id="strength" min="0" max="100" value="55"><div class="control-ends"><span>0 · ORIGINAL</span><span>100 · VHS MAX</span></div>
+    </div>
+    <div class="presets" role="group" aria-label="Style VHS"><button type="button" data-preset="light">SOFT</button><button type="button" data-preset="worn">WORN</button><button type="button" data-preset="etched" class="selected">ETCHED</button></div>
+    <div class="tool-actions"><button id="advancedBtn" type="button">Affiner <span>☷</span></button><button id="libraryBtn" type="button">Galerie <small id="galleryCount">0</small></button></div>
+  </div>
+  <div class="bottom-line"><span>ÉMULATION NATIVE WASM · ZÉRO TÉLÉVERSEMENT</span><a href="THIRD_PARTY.md" target="_blank" rel="noopener noreferrer">Moteur &amp; licences</a><span id="footerStatus" role="status" aria-live="polite">Prêt</span></div>
+</main>
+</div>
+<section class="advanced-panel" id="advancedPanel" hidden aria-label="Réglages VHS avancés">
+  <div class="panel-head"><strong>AFFINER LE SIGNAL</strong><button id="closeAdvanced" aria-label="Fermer">✕</button></div>
+  <p>Véritable modification des paramètres du moteur ntsc-rs.</p>
+  <div class="advanced-control"><label for="noise">Grain analogique <output id="v-noise">40</output></label><input id="noise" type="range" min="0" max="100" value="40"></div>
+  <div class="advanced-control"><label for="chroma">Bavure couleur <output id="v-chroma">55</output></label><input id="chroma" type="range" min="0" max="100" value="55"></div>
+  <div class="advanced-control"><label for="tracking">Tracking / instabilité <output id="v-tracking">28</output></label><input id="tracking" type="range" min="0" max="100" value="28"></div>
+  <div class="advanced-control"><label for="detail">Netteté VHS <output id="v-detail">90</output></label><input id="detail" type="range" min="0" max="100" value="90"></div>
+  <button type="button" id="resetBtn" class="reset">Réinitialiser ce style</button>
+  <div class="panel-footer"><span>100 % DANS TON NAVIGATEUR</span><button id="doneBtn" type="button">Terminé</button></div>
+</section>
+<input type="file" id="imageFiles" accept="image/png,image/jpeg,image/webp,image/avif" multiple hidden>
+<script src="app.js" defer></script>
+</body>
+</html>
